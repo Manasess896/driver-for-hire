@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver and Car Info</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .menu {
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            margin: auto;
+        }
+        .menu-headings {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .menu-headings h2 {
+            cursor: pointer;
+            padding: 10px 20px;
+            margin: 0;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+        .menu-headings h2.active {
+            color: #007BFF;
+        }
+        .menu-headings::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50%;
+            height: 2px;
+            background-color: #007BFF;
+            transition: transform 0.3s ease;
+        }
+        .menu-headings[data-active="car"]::after {
+            transform: translateX(100%);
+        }
+        .menu-content {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .menu-content form {
+            display: none;
+        }
+        .menu-content form.active {
+            display: block;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="date"], input[type="number"], select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .classes label {
+            display: flex;
+            flex-wrap: nowrap;
+            margin: 1vh;
+        }
+        .classes {
+            display: flex;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <div class="menu-headings" data-active="driver">
+            <h2 class="active" data-target="driver">Driver Info</h2>
+            <h2 data-target="car">Car Info</h2>
+        </div>
+        <div class="menu-content">
+            <form id="driver" class="active">
+                <h1>Driver Information</h1>
+                <input type="hidden" name="submissionType" value="driver">
+                <p>Please enter your information below:</p>
+                <label for="image">Driver's Image</label>
+                <input type="file" id="image" name="image" accept="image/*" capture>
+
+                <label for="fname">First Name:</label>
+                <input type="text" id="name" name="name" placeholder="Joe" required>
+                <label for="lname">Last Name:</label>
+                <input type="text" id="lname" name="lname" placeholder="Doe" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" placeholder="example@gmail.com" required>
+
+                <label for="phone">Phone Number:</label>
+                <input type="tel" placeholder="+2541234567" id="phone" name="phone" required>
+
+                <label for="dob">Date of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+
+                <label for="license">Driver's License Number:</label>
+                <input type="text" id="license" name="license" required>
+                <div class="classes">
+                    <label for="classa">Class A:</label>
+                    <input type="checkbox" id="classa" name="classa">
+                    <label for="classb">Class B:</label>
+                    <input type="checkbox" id="classb" name="classb">
+                    <label for="classc">Class C:</label>
+                    <input type="checkbox" id="classc" name="classc">
+                    <label for="classd">Class D:</label>
+                    <input type="checkbox" id="classd" name="classd">
+                    <label for="classe">Class E:</label>
+                    <input type="checkbox" id="classe" name="classe">
+                    <label for="classf">Class F:</label>
+                    <input type="checkbox" id="classf" name="classf">
+                    <label for="classg">Class G:</label>
+                    <input type="checkbox" id="classg" name="classg">
+                    <label for="classh">Class H:</label>
+                    <input type="checkbox" id="classh" name="classh">
+                </div>
+                <label for="experience">Years of Experience:</label>
+                <input type="number" id="experience" name="experience" required>
+                <label for="options">Do you have a car:</label>
+                <select id="options" name="option">
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" placeholder="Country" required autocomplete="additional-name">
+                <label for="location">City:</label>
+                <input type="text" id="location" name="location" placeholder="City" required>
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" required>
+
+                <label for="rate">Rate (in dollars per kilometer):</label>
+                <input type="number" id="rate" name="rate" step="0.01" required>
+
+                <input type="submit" value="Submit">
+            </form>
+            <form id="car">
+                <h1>Car Information</h1>
+                <input type="hidden" name="submissionType" value="car">
+                <label for="carNumberPlate">Car Number Plate:</label>
+                <input type="text" id="carNumberPlate" name="carNumberPlate" required>
+                <label for="mileage">Mileage:</label>
+                <input type="number" id="mileage" name="mileage" required>
+                <label for="consumption">Consumption (L/100km):</label>
+                <input type="number" id="consumption" name="consumption" step="0.01" required>
+                <label for="carPhone">Phone Number:</label>
+                <input type="tel" id="carPhone" name="phone" required>
+                <label for="carImage1">Car Image 1:</label>
+                <input type="file" id="carImage1" name="carImage1" accept="image/*" required>
+                <label for="carImage2">Car Image 2:</label>
+                <input type="file" id="carImage2" name="carImage2" accept="image/*" required>
+                <label for="carImage3">Car Image 3:</label>
+                <input type="file" id="carImage3" name="carImage3" accept="image/*" required>
+                <label for="carImage4">Car Image 4:</label>
+                <input type="file" id="carImage4" name="carImage4" accept="image/*" required>
+                <label for="carImage5">Car Image 5:</label>
+                <input type="file" id="carImage5" name="carImage5" accept="image/*" required>
+                <label for="carImage6">Car Image 6:</label>
+                <input type="file" id="carImage6" name="carImage6" accept="image/*" required>
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+    <script>
+        const headings = document.querySelectorAll('.menu-headings h2');
+        const menuHeadings = document.querySelector('.menu-headings');
+        const contents = document.querySelectorAll('.menu-content form');
+
+        headings.forEach(heading => {
+            heading.addEventListener('click', () => {
+                const target = heading.getAttribute('data-target');
+
+                // Remove active class from all headings and contents
+                headings.forEach(h => h.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+
+                // Add active class to the clicked heading and corresponding content
+                heading.classList.add('active');
+                document.getElementById(target).classList.add('active');
+
+                // Update the data-active attribute to animate the line
+                menuHeadings.setAttribute('data-active', target);
+            });
+        });
+    </script>
+</body>
+</html>

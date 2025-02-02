@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Panel</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>hire a driver</h1>
+    <h2>Welcome to the Driver Panel</h2>
+    <div id="user-info" class="user-info">
+        <!-- User information will be displayed here -->
+    </div>
+    <center>
+        <button class="edit-btn" onclick="toggleEditForm()">Edit Information</button>
+    </center>
+    <form id="edit-form" class="edit-form">
+        <!-- Editable fields will be populated here -->
+        <input type="text" id="edit-name" name="name" placeholder="Full Name" required>
+        <input type="email" id="edit-email" name="email" placeholder="Email" required>
+        <input type="tel" id="edit-phone" name="phone" placeholder="Phone Number" required>
+        <input type="date" id="edit-dob" name="dob" required>
+        <input type="text" id="edit-license" name="license" placeholder="Driver's License Number" required>
+        <input type="number" id="edit-experience" name="experience" placeholder="Years of Experience" required>
+        <select id="edit-hasCar" name="hasCar">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select>
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="../index.html">go back to main page </a>
+    <script src="main.js"></script>
+</body>
+</html>

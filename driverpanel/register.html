@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+     <script src="https://kit.fontawesome.com/9d3f00a5c9.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 2rem;
+            margin-top: 2vh;
+            color: #333;
+        }
+        h2 {
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 2vh;
+        }
+        .registerform {
+            width: 70vw;
+            max-width: 350px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            margin: auto;
+            padding: 2vh;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+        }
+        .registerform label {
+            font-size: 1rem;
+            text-align: center;
+            text-transform: capitalize;
+            display: block;
+            margin-top: 1vh;
+        }
+        .registerform input {
+            width: 95%;
+            max-width: 300px;
+            margin: 1vh 0;
+            padding: 1.4vh;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .submit-btn {
+            background-color: green;
+            color: white;
+            padding: 2vh;
+            border: none;
+            border-radius: 5px;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        .submit-btn:hover {
+            background-color: darkgreen;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 1vh;
+            font-size: 0.8rem;
+        }
+        a {
+            font-size: 0.8rem;
+            text-align: center;
+            text-transform: lowercase;
+            display: block;
+            margin-top: 1vh;
+        }
+        .password-container {
+            position: relative;
+            width: 95%;
+            max-width: 300px;
+        }
+        .password-container input {
+            width: 100%;
+     /* Adjust padding to make space for the icon */
+        }
+        .password-container .fa-eye {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>hire a driver</h1>
+    <h2>Register as a Driver</h2>
+    <div class="registerform">
+        <form onsubmit="submitregistrationform(event)">
+            <h3>Registration Form</h3>
+            <label for="name">Full Name</label>
+            <input type="text" name="fname" id="fname" autocomplete="name" required>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" autocomplete="email" required>
+            <label for="password">Password</label>
+            <div class="password-container">
+                <input type="password" name="password" id="password" autocomplete="new-password" required>
+                <i class="fa fa-eye" id="togglePassword"></i>
+            </div>
+            <center>
+                <button type="submit" class="submit-btn">Submit</button>
+            </center>
+            <div id="error-message" class="error-message"></div>
+            <a href="login.html">I already have an account</a>
+            <a href="../index.html">go back to main page </a>
+            
+        </form>
+        <div id="verification-section" style="display: none;">
+            <h2>Email Verification</h2>
+            <label for="verification-code">Enter the 6-digit code sent to your email</label>
+            <input type="text" id="verification-code" required>
+            <button onclick="verifyEmailCode(event)">Verify</button>
+        </div>
+    </div>
+    
+    <script src="register.js"></script>
+</body>
+</html>

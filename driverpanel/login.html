@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://kit.fontawesome.com/9d3f00a5c9.js" crossorigin="anonymous"></script>
+    <style>
+        h1 {
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        .login-form {
+            width: 70vw;
+            max-width: 350px;
+            height: auto;
+            display: block;
+            justify-content: center;
+            align-items: center;
+            background-color: #f1f1f1;
+            margin: auto;
+            padding: 2vh;
+        }
+        .login-form button {
+            display: block;
+        }
+        .login-form label {
+            font-size: 1rem;
+            text-align: center;
+            text-transform: capitalize;
+            display: block;
+        }
+        .login-form input {
+            width: 90%;
+            max-width: 300px;
+            margin: 1vh 0;
+            padding: 1.4vh;
+            border: 1px solid #000;
+            border-radius: 5px;
+        }
+        .submit-btn {
+            background-color: green;
+            padding: 2vh;
+            border: none;
+            border-radius: 5px;
+            text-transform: uppercase;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: 1vh;
+        }
+        a {
+            text-align: center;
+            display: block;
+            font-size: 0.8rem;
+        }
+        h2 ,h4,h3{
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 1.2rem;
+        }
+        .password-container {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            max-width: 300px;
+        }
+        .password-container input {
+            width: 100%;
+            max-width: 300px;
+        }
+        .password-container .fa-eye {
+            position: absolute;
+            right: 0px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+        }
+        .forgot-password-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            text-transform: lowercase;
+            font-size: 0.8rem;
+            margin-top: 1vh;
+            color: blue;
+            text-decoration: underline;
+        }
+        #forgot-password {
+            display: none; /* Initially hidden */
+            background-color: rgb(50, 114, 250);
+            padding: 2vh;
+            width: 60vw;
+            height: auto;
+            max-width: 350px;
+            margin: auto;
+            position: absolute;
+            justify-content: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 2vh;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        #forgot-password input {
+            width: 35vw;
+            margin: 2vh;
+            max-width: 280px;
+            padding: 1.4vh;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #forgot-password button {
+            background-color: green;
+            color: white;
+            padding: 2vh;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 70%;
+            margin: 3vh;
+        }
+        #forgot-password button:hover {
+            background-color: darkgreen;
+        }
+        #success-popup {
+            display: none; /* Initially hidden */
+            background-color: #f1f1f1;
+            padding: 2vh;
+            width: 60vw;
+            height: auto;
+            max-width: 350px;
+            margin: auto;
+            position: absolute;
+            justify-content: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 2vh;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        #success-popup button {
+            background-color: green;
+            color: white;
+            padding: 2vh;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 70%;
+            margin: 3vh;
+        }
+        #success-popup button:hover {
+            background-color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+    <h1>hire a driver</h1>
+    <h2>Login to Your Account</h2>
+    <div class="login-form">
+        <form>
+            <h3>Login Form</h3>
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" autocomplete="email" required>
+            <label for="password">Password</label>
+            <div class="password-container">
+                <input type="password" name="password" id="password" autocomplete="current-password" required>
+                <i class="fa fa-eye" id="togglePassword"></i>
+            </div>
+            <center>
+                <button type="submit" class="submit-btn">Submit</button>
+            </center>
+            <div id="error-message" class="error-message"></div>
+            <a href="register.html">I don't have an account</a>
+        </form>
+        <center>
+            <button class="forgot-password-btn" onclick="forgotpassword()">forgot password</button>
+            <a href="../index.html">go back to main page </a>
+        </center>
+    </div>
+    <div id="forgot-password">
+        <form onsubmit="handleForgotPassword(event)">
+            <h2>Forgot Password</h2>
+            <label for="forgot-email">Enter your email</label>
+            <input type="email" name="email" id="forgot-email" placeholder="Enter your email" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div id="success-popup">
+        <h2>Password Reset</h2>
+        <p>A password reset link has been sent to your email. Please check your inbox and follow the instructions to reset your password.</p>
+        <button onclick="closeSuccessPopup()">OK</button>
+    </div>
+    <div id="verification-section" style="display: none;">
+        <h2>Email Verification</h2>
+        <label for="verification-code">Enter the 6-digit code sent to your email</label>
+        <input type="text" id="verification-code" required>
+        <button onclick="verifyEmailCode(event)">Verify</button>
+    </div>
+    <script src="login.js"></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .verification-form {
+            width: 70vw;
+            max-width: 350px;
+            height: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            margin: auto;
+            padding: 2vh;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            margin-top: 10vh;
+        }
+        .verification-form label {
+            font-size: 1rem;
+            text-align: center;
+            text-transform: capitalize;
+            display: block;
+            margin-top: 1vh;
+        }
+        .verification-form input {
+            width: 95%;
+            max-width: 300px;
+            margin: 1vh 0;
+            padding: 1.4vh;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .submit-btn {
+            background-color: green;
+            color: white;
+            padding: 2vh;
+            border: none;
+            border-radius: 5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            margin-top: 1vh;
+        }
+        .request-btn {
+            color: black;
+            background-color: transparent;
+            display: block;
+            border: none;
+            text-transform: lowercase;
+        }
+        .request-btn:hover {
+            text-decoration: underline;
+        }
+        .submit-btn:hover {
+            background-color: darkgreen;
+        }
+        .error-message, .success-message {
+            text-align: center;
+            margin-top: 1vh;
+            font-size: 0.8rem;
+        }
+        .error-message {
+            color: red;
+        }
+        .success-message {
+            color: green;
+        }
+    </style>
+</head>
+<body>
+    <div class="verification-form">
+        <form onsubmit="verifyEmailCode(event)">
+            <h2>Email Verification</h2>
+            <label for="verification-code">Enter the 6-digit code sent to your email</label>
+            <input type="text" id="verification-code" required>
+            <center>
+                <button type="submit" class="submit-btn">Verify</button>
+                <button type="button" class="request-btn" onclick="requestVerificationCodeAgain()" id="request-btn">Request Code Again</button>
+                <div id="countdown-timer" style="display: none;">Please wait <span id="countdown"></span> before requesting another code.</div>
+            </center>
+            <div id="message" class="error-message"></div>
+        </form>
+    </div>
+    <script>
+        async function verifyEmailCode(event) {
+            event.preventDefault();
+            const code = document.getElementById('verification-code').value;
+            const email = localStorage.getItem('userEmail');
+            const message = document.getElementById('message');
+            const token = localStorage.getItem('token');
+            console.log(token) // Check the token
+            try {
+                const response = await fetch('http://localhost:3000/verify-email-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, code })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    message.className = 'success-message';
+                    message.textContent = 'Email verified successfully!';
+                    localStorage.setItem('token', result.token);
+                     // Store the token
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 2000);
+                } else {
+                    message.className = 'error-message';
+                    message.textContent = result.message;
+                }
+            } catch (err) {
+                message.className = 'error-message';
+                message.textContent = 'An error occurred. Please try again.';
+            }
+        }
+
+        async function requestVerificationCodeAgain() {
+            const email = localStorage.getItem('userEmail');
+            const message = document.getElementById('message');
+            const requestBtn = document.getElementById('request-btn');
+            const countdownTimer = document.getElementById('countdown-timer');
+            const countdown = document.getElementById('countdown');
+
+            try {
+                const response = await fetch('http://localhost:3000/request-verification-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    message.className = 'success-message';
+                    message.textContent = 'Verification code sent again. Please check your email.';
+                    startCountdown(2 * 60); // Start 30-minute countdown
+                } else {
+                    message.className = 'error-message';
+                    message.textContent = result.message;
+                }
+            } catch (err) {
+                message.className = 'error-message';
+                message.textContent = 'An error occurred. Please try again.';
+            }
+
+            function startCountdown(duration) {
+                let timer = duration, minutes, seconds;
+                countdownTimer.style.display = 'block';
+                requestBtn.disabled = true;
+
+                const interval = setInterval(() => {
+                    minutes = parseInt(timer / 60, 10);
+                    seconds = parseInt(timer % 60, 10);
+
+                    minutes = minutes < 10 ? "0" + minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    countdown.textContent = `${minutes}:${seconds}`;
+
+                    if (--timer < 0) {
+                        clearInterval(interval);
+                        countdownTimer.style.display = 'none';
+                        requestBtn.disabled = false;
+                    }
+                }, 1000);
+            }
+        }
+    </script>
+</body>
+</html>

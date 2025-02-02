@@ -1,0 +1,249 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    background-color: #333;
+    color: white;
+    position: fixed;
+    width: 0%;
+    height: 100%;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    transition: 0.6s;
+    bottom: 0;
+    right: 0;
+    font-size: 1.1rem;
+}
+
+.navbar a {
+    display: block;
+    color: white;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 1vh 2vh;
+    margin: 2vh;
+}
+
+.opennavbtn {
+    background-color: transparent;
+    border: none;
+    color: black;
+    font-size: 2rem;
+    float: right;
+    margin: 2vh;
+}
+
+.closenavbtn {
+    color: red;
+    background-color: transparent;
+    font-size: 2rem;
+    display: flex;
+    justify-content: flex-end;
+    margin: 2vh;
+    align-items: center;
+    align-content: center;
+    border: none;
+}
+nav{
+    position: sticky;
+    top: 0;
+    background-color:white;
+    padding: 10px;
+}
+h1 {
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 2rem;
+    margin-top: 2vh;
+    color: #333;
+}
+
+.driver-hire {
+    display: flex;
+    flex-wrap: nowrap;
+    text-transform: capitalize;
+    width: 90%;
+    max-width: 400px;
+    margin: auto;
+    background-color: orange;
+    padding: 2vh;
+    justify-content: space-evenly;
+    font-size: 1.1rem;
+   
+}
+
+.driver-hire a {
+    background-color: green;
+    padding: 1vh;
+    border: none;
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 1vh;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.container {
+    display: block;
+    margin: 2vh;
+}
+
+.container img {
+    object-fit: cover;
+    width: 100%;
+}
+
+.container p {
+    text-transform: capitalize;
+}
+
+.driver-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+   
+    margin: 2vh;
+}
+.driver-container img{
+    width: 20vw;
+    height: 10vw;
+    max-width: 150px;
+    object-fit: cover;
+}
+.driver-container span{
+    display: block;
+}
+.driver{
+    border: 1px solid black;
+    padding: 1vh;
+    background-color: rgb(228, 217, 228);
+    border-radius: 1vh;
+    font-size: 0.8rem;
+    max-width: 300px;
+}
+
+.rating-form {
+  margin: 2vh auto 15vh;
+  padding: 2vh;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 1vh;
+  width: 50%;
+  max-width: 300px;
+
+}
+
+.rating-form h2 {
+  margin-bottom: 1vh;
+}
+
+.rating-form input,
+.rating-form textarea {
+  width: 90%;
+  max-width: 280px;
+  padding: 1vh;
+  margin-bottom: 1vh;
+  border: 1px solid #ddd;
+  border-radius: 1vh;
+}
+
+.rating-form button {
+  padding: 1vh 2vh;
+  background-color: green;
+  color: white;
+  border: none;
+  border-radius: 1vh;
+  cursor: pointer;
+}
+
+.ratings {
+  margin-top: 1vh;
+}
+
+.reviews p {
+  margin: 0.5vh 0;
+  font-size: 0.9rem;
+  color: #555;
+}
+footer{
+    background-color:black;
+    width: 100%;
+    display: block;
+    position: fixed;
+    bottom: 0;
+    padding: 10px;
+text-align: center;
+}
+footer a{
+    font-size: 0.7rem;
+}
+footer span{
+    color: white;
+display: block;
+text-align: center;
+text-transform: capitalize;
+}
+
+/* code to handle slide between divers and cars slide  */
+.main-menu{
+    display: flex;
+    justify-content: center;
+    max-width: 98%;
+    margin: auto;
+}
+.menu{
+    width: 100%;
+    max-width: 600px;
+    text-align: center;
+
+}
+.menu-headings{
+    display: flex;
+    justify-content: space-around;
+  margin-bottom: 20px;
+  position: relative;
+}
+.menu-headings h2{
+    cursor: pointer;
+    padding: 10px 20px;
+    margin: 0;
+    color: #333;
+    transition: color 0.5s ease; 
+    text-transform: uppercase;
+}
+.menu-headings h2.active{
+    color: #007bff;
+}
+.menu-headings::after{
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 50%;
+    height: 2vh;
+    background-color: #007bff;
+   
+    transition: transform 0.5s ease;
+}
+.menu-headings[data-active="heading2"]::after{
+    transform: translateX(100%);
+}
+.menu-content{
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgb(0, 0, 0, 0.1);
+}
+.menu-content div{
+    display: none;
+}
+.menu-content div.active{
+    display: block;
+}
