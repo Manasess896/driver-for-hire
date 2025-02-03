@@ -8,6 +8,19 @@ document.querySelector('form').addEventListener('submit', async (event) => {
 
     let data = { email };
 
+    // Check if the user has already submitted the information
+    const checkResponse = await fetch(`http://localhost:3001/check-submission?email=${email}&type=${submissionType}`, {
+        headers: {
+            'Authorization': token
+        }
+    });
+
+    const checkData = await checkResponse.json();
+    if (checkData.submitted) {
+        alert(`You have already submitted ${submissionType} information.`);
+        return;
+    }
+
     if (submissionType === 'driver') {
         const location = formData.get('location');
         const country = formData.get('country');

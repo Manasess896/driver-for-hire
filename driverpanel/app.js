@@ -217,6 +217,30 @@ async function main() {
       }
     });
 
+    app.get('/check-submission', async (req, res) => {
+      const { email, type } = req.query;
+      try {
+          let collection;
+          if (type === 'driver') {
+              collection = driverInfoCollection;
+          } else if (type === 'car') {
+              collection = carInfoCollection;
+          } else {
+              return res.status(400).json({ message: 'Invalid submission type.' });
+          }
+  
+          const info = await collection.findOne({ email });
+          if (info) {
+              return res.status(200).json({ submitted: true });
+          } else {
+              return res.status(200).json({ submitted: false });
+          }
+      } catch (err) {
+          console.error('Error checking submission:', err);
+          res.status(500).send({ message: 'Error checking submission.' });
+      }
+  });
+
     app.post('/submit-info', upload.array('carImages', 6), async (req, res) => {
       try {
           const { email, submissionType } = req.body;
