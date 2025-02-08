@@ -30,7 +30,13 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.static(path.join(__dirname, 'driverpanel')));
+app.use(express.static(path.join(__dirname, 'driverpanel'), {
+  setHeaders: (res, path, stat) => {
+    if (path.endsWith('.css')) {
+      res.set('Content-Type', 'text/css');
+    }
+  }
+}));
 app.get('/reset-password.html', (req, res) => {
   res.sendFile(path.join(__dirname, 'reset-password.html'));
 });
@@ -53,9 +59,18 @@ const verificationLimiter = rateLimit({
   message: 'Too many verification requests from this IP, please try again after 15 minutes'
 });
 
+const forgotPasswordLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour window
+  max: 3, // limit each IP to 3 requests per windowMs
+  message: 'Too many password reset requests. Please try again after an hour.'
+});
+
+const resetRequests = new Map(); // Track reset requests per email
+
 app.use('/register', registerLimiter);
 app.use('/login', loginLimiter);
 app.use('/verify-email-code', verificationLimiter);
+app.use('/forgot-password', forgotPasswordLimiter);
 
 async function connectWithRetry() {
   try {
@@ -72,6 +87,9 @@ async function main() {
     await connectWithRetry();
     const db = client.db('test');
     const usersCollection = db.collection('users');
+    const deletedUsersCollection = db.collection('deletedUsers');
+    const deletedDriverInfoCollection = db.collection('deletedDriverInfo');
+    const deletedCarInfoCollection = db.collection('deletedCarInfo');
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -98,6 +116,15 @@ async function main() {
       try {
         const { name, email, password } = req.body;
         console.log('Registration attempt:', email);
+
+        // Check if email exists in deleted users
+        const deletedUser = await deletedUsersCollection.findOne({ email });
+        if (deletedUser) {
+          const daysLeft = Math.ceil((deletedUser.expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+          return res.status(400).json({ 
+            message: `This email cannot be used for registration for ${daysLeft} more days. Please contact support for account recovery.`
+          });
+        }
 
         // Validate and sanitize inputs
         if (!email || typeof email !== 'string' || !email.includes('@')) {
@@ -265,6 +292,15 @@ Thank you,`
         const { email, password } = req.body;
         console.log('Login attempt:', email);
 
+        // Check if account is deleted
+        const deletedUser = await deletedUsersCollection.findOne({ email });
+        if (deletedUser) {
+          const daysLeft = Math.ceil((deletedUser.expiryDate - new Date()) / (1000 * 60 * 60 * 24));
+          return res.status(401).json({ 
+            message: `This account has been deleted. Please wait ${daysLeft} days or contact support for account recovery.`
+          });
+        }
+
         // Validate and sanitize inputs
         if (!email || typeof email !== 'string' || !email.includes('@')) {
           return res.status(400).json({ message: 'Invalid email format.' });
@@ -324,49 +360,58 @@ Thank you,`
 
     app.post('/forgot-password', async (req, res) => {
       const { email } = req.body;
-      const user = await usersCollection.findOne({ email });
-      if (!user) {
-        return res.status(400).json({ message: 'User not found.' });
+      
+      // Check if there's an existing request and it's within cooldown
+      const lastRequest = resetRequests.get(email);
+      const now = Date.now();
+      if (lastRequest && (now - lastRequest) < 5 * 60 * 1000) { // 5 minutes cooldown
+        const remainingTime = Math.ceil((5 * 60 * 1000 - (now - lastRequest)) / 1000);
+        return res.status(429).json({ 
+          message: `Please wait ${remainingTime} seconds before requesting another reset link.` 
+        });
       }
 
-      const token = jwt.sign({ email: user.email }, secretKey, { expiresIn: '1h' });
-      const resetLink = `http://localhost:3000/reset-password.html?token=${token}`;
+      try {
+        const user = await usersCollection.findOne({ email });
+        if (!user) {
+          return res.status(400).json({ message: 'User not found.' });
+        }
 
-      const mailOptions = {
-        from: emailUser,
-        to: email,
-        subject: 'Password Reset',
-        text: `Hi ${user.name},
+        resetRequests.set(email, now);
+        
+        const token = jwt.sign({ email: user.email }, secretKey, { expiresIn: '1h' });
+        const resetLink = `http://localhost:3000/reset-password.html?token=${token}`;
 
-We received a request to reset the password for your account associated with this email address.
+        const mailOptions = {
+          from: emailUser,
+          to: email,
+          subject: 'Password Reset',
+          text: `Hi ${user.name},
 
-Please click the link below to reset your password:
+We received a request to reset your password.
+
+Click here to reset your password:
 ${resetLink}
 
-For security reasons, this link will expire in 1 hour. If you did not request a password reset, please ignore this email. Your password will remain unchanged.
+This link will expire in 1 hour.
 
-### Instructions:
-
-1. Click the link above.
-2. You will be redirected to our password reset page.
-3. Enter your new password and confirm it.
-4. Submit the form to complete the process.
-
-If you have any questions or need further assistance, feel free to contact our support team.
+If you didn't request this, please ignore this email.
 
 Best regards,
-hire a driver Support Team
+Hire a Driver Team`
+        };
 
- If you did not request this password reset, you can safely ignore this email. Your account will remain secure.`
-      };
-
-      transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-          console.error('Error sending email:', error);
-          return res.status(500).json({ message: 'Error sending email.' });
-        }
-        res.status(200).json({ message: 'Password reset link has been sent to your email.' });
-      });
+        transporter.sendMail(mailOptions, (error, info) => {
+          if (error) {
+            console.error('Error sending email:', error);
+            return res.status(500).json({ message: 'Error sending email.' });
+          }
+          res.status(200).json({ message: 'Password reset link has been sent to your email.' });
+        });
+      } catch (err) {
+        console.error('Error in forgot password:', err);
+        res.status(500).json({ message: 'An error occurred. Please try again.' });
+      }
     });
 
     app.post('/reset-password', async (req, res) => {
@@ -384,6 +429,139 @@ hire a driver Support Team
         res.status(500).json({ message: 'Invalid or expired token.' });
       }
     });
+
+    // Delete full account
+    app.delete('/delete-account', async (req, res) => {
+      try {
+        const { email, password } = req.body;
+        const user = await usersCollection.findOne({ email });
+
+        if (!user) {
+          return res.status(404).json({ message: 'Account not found.' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return res.status(401).json({ message: 'Invalid password.' });
+        }
+
+        // Move user to deleted users collection with deletion date
+        const deletionDate = new Date();
+        const expiryDate = new Date(deletionDate.getTime() + (30 * 24 * 60 * 60 * 1000)); // 30 days from now
+
+        await deletedUsersCollection.insertOne({
+          ...user,
+          deletionDate,
+          expiryDate,
+          deletionType: 'full_account'
+        });
+
+        // Remove user from active collection
+        await usersCollection.deleteOne({ email });
+
+        res.status(200).json({ message: 'Account deleted successfully. Data will be permanently removed after 30 days.' });
+      } catch (err) {
+        console.error('Error deleting account:', err);
+        res.status(500).json({ message: 'Error deleting account.' });
+      }
+    });
+
+    // Delete driver info only
+    app.delete('/delete-driver-info', async (req, res) => {
+      try {
+        const { email, password } = req.body;
+        const user = await usersCollection.findOne({ email });
+
+        if (!user) {
+          return res.status(404).json({ message: 'Account not found.' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return res.status(401).json({ message: 'Invalid password.' });
+        }
+
+        const driverInfo = user.driverInfo;
+        if (!driverInfo) {
+          return res.status(404).json({ message: 'No driver information found.' });
+        }
+
+        // Store deleted driver info
+        await deletedDriverInfoCollection.insertOne({
+          email,
+          driverInfo,
+          deletionDate: new Date(),
+          expiryDate: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000))
+        });
+
+        // Remove driver info from user document
+        await usersCollection.updateOne(
+          { email },
+          { $unset: { driverInfo: "" } }
+        );
+
+        res.status(200).json({ message: 'Driver information deleted successfully.' });
+      } catch (err) {
+        console.error('Error deleting driver info:', err);
+        res.status(500).json({ message: 'Error deleting driver information.' });
+      }
+    });
+
+    // Delete car info only
+    app.delete('/delete-car-info', async (req, res) => {
+      try {
+        const { email, password } = req.body;
+        const user = await usersCollection.findOne({ email });
+
+        if (!user) {
+          return res.status(404).json({ message: 'Account not found.' });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+          return res.status(401).json({ message: 'Invalid password.' });
+        }
+
+        const carInfo = user.carInfo;
+        if (!carInfo) {
+          return res.status(404).json({ message: 'No car information found.' });
+        }
+
+        // Store deleted car info
+        await deletedCarInfoCollection.insertOne({
+          email,
+          carInfo,
+          deletionDate: new Date(),
+          expiryDate: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000))
+        });
+
+        // Remove car info from user document
+        await usersCollection.updateOne(
+          { email },
+          { $unset: { carInfo: "" } }
+        );
+
+        res.status(200).json({ message: 'Car information deleted successfully.' });
+      } catch (err) {
+        console.error('Error deleting car info:', err);
+        res.status(500).json({ message: 'Error deleting car information.' });
+      }
+    });
+
+    // Cleanup job for deleted data (runs daily)
+    setInterval(async () => {
+      try {
+        const now = new Date();
+        const collections = [deletedUsersCollection, deletedDriverInfoCollection, deletedCarInfoCollection];
+        
+        for (const collection of collections) {
+          await collection.deleteMany({ expiryDate: { $lt: now } });
+        }
+        console.log('Cleanup job completed successfully');
+      } catch (err) {
+        console.error('Error in cleanup job:', err);
+      }
+    }, 24 * 60 * 60 * 1000); // Run every 24 hours
 
     app.listen(port, () => {
       console.log(`Server is running at http://localhost:${port}`);

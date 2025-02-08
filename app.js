@@ -1,119 +1,210 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient } = require('mongodb');
 const bodyParser = require('body-parser');
+const { MongoClient } = require('mongodb');
 require('dotenv').config();
-const mongoose = require('mongoose');
 const path = require('path');
-const rateLimit = require('express-rate-limit'); // Add rate limiting library
 
 const app = express();
 const port = process.env.PORT || 3000;
 const uri = process.env.MONGODB_URI;
-const secretKey = process.env.JWT_SECRET;
 
-if (!uri || !secretKey) {
-  console.error('MONGODB_URI or JWT_SECRET is not defined in the environment variables.');
+if (!uri) {
+  console.error('Environment variables are not defined properly.');
   process.exit(1);
 }
 
-// Increase the body size limit
+const MONGO_OPTIONS = {
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
+  connectTimeoutMS: 10000,
+};
+
+let dbClient = null;
+
+async function connectWithRetry() {
+  const MAX_RETRIES = 5;
+  const RETRY_INTERVAL = 5000; // 5 seconds
+  let retries = 0;
+
+  while (retries < MAX_RETRIES) {
+    try {
+      if (!dbClient) {
+        dbClient = await MongoClient.connect(uri, MONGO_OPTIONS);
+        console.log('Connected to MongoDB successfully');
+        return dbClient;
+      }
+      return dbClient;
+    } catch (err) {
+      retries++;
+      console.error(`Failed to connect to MongoDB (Attempt ${retries}/${MAX_RETRIES}):`, err.message);
+      if (retries === MAX_RETRIES) {
+        throw new Error('Failed to connect to MongoDB after maximum retries');
+      }
+      await new Promise(resolve => setTimeout(resolve, RETRY_INTERVAL));
+    }
+  }
+}
+
+// Middleware to ensure database connection
+app.use(async (req, res, next) => {
+  try {
+    if (!dbClient || !dbClient.topology.isConnected()) {
+      await connectWithRetry();
+    }
+    next();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ 
+      message: 'Database connection error. Please try again later.',
+      error: error.message
+    });
+  }
+});
+
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(cors({
-  origin: true, // Ensure this is set to true to allow requests from any origin
+  origin: true,
   methods: ['GET', 'POST', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-// Rate limiting middleware for rating submission
-const rateLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+// Serve static files
+app.use(express.static(path.join(__dirname)));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// Basic health check endpoint
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK' });
 });
 
-// MongoDB connection
-mongoose.connect(uri).then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('Error connecting to MongoDB', err);
-});
-
-async function main() {
-  const client = new MongoClient(uri);
-
+// Endpoint to fetch all driver and car information
+app.get('/all-info', async (req, res) => {
   try {
-    await client.connect();
-    console.log('Connected to MongoDB');
-    const db = client.db('test');
+    const db = dbClient.db('test');
     const driverInfoCollection = db.collection('driverInfo');
-    const usersCollection = db.collection('users'); // Assuming there's a users collection
-    const contactCollection = db.collection('contacts'); // Add a contacts collection
+    const carInfoCollection = db.collection('carInfo');
 
-    // Endpoint to handle fetching all user information
-    app.get('/driver-info', async (req, res) => {
-      try {
-        console.log('Fetching all user info');
-        const users = await driverInfoCollection.find().toArray();
-        res.status(200).json(users);
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-      }
+    // Fetch drivers and cars separately
+    const [drivers, cars] = await Promise.all([
+      driverInfoCollection.find().toArray(),
+      carInfoCollection.find().toArray()
+    ]);
+
+    // Convert binary images back to base64 for drivers
+    const formattedDrivers = drivers.map(driver => ({
+      ...driver,
+      image: driver.image ? `data:${driver.image.contentType};base64,${driver.image.data}` : null
+    }));
+
+    // Convert binary images back to base64 for cars
+    const formattedCars = cars.map(car => ({
+      ...car,
+      carImages: car.carImages ? car.carImages.map(img => 
+        `data:${img.contentType};base64,${img.data}`
+      ) : []
+    }));
+
+    res.status(200).json({
+      drivers: formattedDrivers,
+      cars: formattedCars
     });
-
-    // Endpoint to handle rating submission with rate limiting
-    app.post('/driver-info', rateLimiter, async (req, res) => {
-      try {
-        const { email, rating, review } = req.body;
-        console.log('Rating successfully submitted for:', email);
-
-        // Check if driver exists
-        const driver = await driverInfoCollection.findOne({ email });
-        if (!driver) {
-          console.log('Driver not found:', email); // Log if driver is not found
-          return res.status(400).json({ message: 'Driver not found.' });
-        }
-
-        // Update the driver's ratings and reviews
-        await driverInfoCollection.updateOne(
-          { email },
-          { $push: { ratings: { rating, review, user: email } } }
-        );
-
-        res.status(200).json({ message: 'Rating submitted successfully.' });
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-      }
-    });
-
-    // Endpoint to handle contact form submission
-    app.post('/contact', async (req, res) => {
-      try {
-        const { name, email, message } = req.body;
-        console.log('Contact form submitted:', name, email, message);
-
-        // Save contact form data to the database
-        await contactCollection.insertOne({ name, email, message });
-
-        res.status(200).json({ message: 'Contact form submitted successfully.' });
-      } catch (err) {
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-      }
-    });
-
-    // Serve static files from the current directory
-    app.use(express.static(path.join(__dirname)));
 
   } catch (err) {
-    console.error('Error connecting to MongoDB', err);
+    console.error('Error fetching information:', err);
+    res.status(500).json({
+      message: 'Internal Server Error',
+      error: err.message
+    });
   }
-}
+});
 
-main().catch(console.error);
+// Add new endpoint for ratings
+app.post('/submit-rating', async (req, res) => {
+  try {
+    const db = dbClient.db('test');
+    const driverInfoCollection = db.collection('driverInfo');
+    const ratingsTrackingCollection = db.collection('ratingsTracking');
+    const { driverEmail, rating, review } = req.body;
+    const userIP = req.ip;
 
+    console.log('Rating attempt:', { driverEmail, userIP });
+
+    // Check if this IP has already rated this driver
+    const existingRating = await ratingsTrackingCollection.findOne({
+      driverEmail,
+      userIP
+    });
+
+    if (existingRating) {
+      console.log('Duplicate rating attempt:', { driverEmail, userIP });
+      return res.status(400).json({ 
+        status: 'error',
+        message: 'You have already submitted a rating for this driver' 
+      });
+    }
+
+    // First check if driver exists
+    const driver = await driverInfoCollection.findOne({ email: driverEmail });
+    if (!driver) {
+      return res.status(404).json({ 
+        status: 'error',
+        message: 'Driver not found' 
+      });
+    }
+
+    // Save the rating tracking first
+    await ratingsTrackingCollection.insertOne({
+      driverEmail,
+      userIP,
+      ratedAt: new Date()
+    });
+
+    // Then update driver ratings
+    const result = await driverInfoCollection.updateOne(
+      { email: driverEmail },
+      { 
+        $push: { 
+          ratings: {
+            rating: parseInt(rating),
+            review,
+            date: new Date(),
+            userIP
+          }
+        }
+      }
+    );
+
+    console.log('Rating submitted:', { driverEmail, userIP, result });
+
+    res.status(200).json({ 
+      status: 'success',
+      message: 'Rating submitted successfully' 
+    });
+  } catch (err) {
+    console.error('Error submitting rating:', err);
+    res.status(500).json({ 
+      status: 'error',
+      message: 'Error submitting rating' 
+    });
+  }
+});
+
+// Optional: Add cleanup job for old tracking records (e.g., after 6 months)
+setInterval(async () => {
+  try {
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    
+    await ratingsTrackingCollection.deleteMany({
+      ratedAt: { $lt: sixMonthsAgo }
+    });
+  } catch (error) {
+    console.error('Error cleaning up old rating records:', error);
+  }
+}, 24 * 60 * 60 * 1000); // Run daily
+
+// Start server
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

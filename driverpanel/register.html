@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-     <script src="https://kit.fontawesome.com/9d3f00a5c9.js" crossorigin="anonymous"></script>
+    <script src="https://kit.fontawesome.com/9d3f00a5c9.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -26,16 +28,15 @@
             margin-bottom: 2vh;
         }
         .registerform {
-            width: 70vw;
-            max-width: 350px;
+            width:100%;
+            max-width:300px;
             height: auto;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             background-color: #fff;
             margin: auto;
-            padding: 2vh;
+            padding: 0vh;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             border-radius: 10px;
         }
@@ -47,12 +48,11 @@
             margin-top: 1vh;
         }
         .registerform input {
-            width: 95%;
+            width: 100%;
             max-width: 300px;
-            margin: 1vh 0;
-            padding: 1.4vh;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+       
+            border: 1px solid black;
+            border-radius: 1vh;
         }
         .submit-btn {
             background-color: green;
@@ -95,36 +95,45 @@
             transform: translateY(-50%);
             cursor: pointer;
         }
+
     </style>
 </head>
 <body>
-    <h1>hire a driver</h1>
-    <h2>Register as a Driver</h2>
-    <div class="registerform">
-        <form onsubmit="submitregistrationform(event)">
-            <h3>Registration Form</h3>
-            <label for="name">Full Name</label>
-            <input type="text" name="fname" id="fname" autocomplete="name" required>
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" autocomplete="email" required>
-            <label for="password">Password</label>
-            <div class="password-container">
-                <input type="password" name="password" id="password" autocomplete="new-password" required>
-                <i class="fa fa-eye" id="togglePassword"></i>
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html" class="active">Register</a></li>
+            <li><a href="../about.html">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="form-container">
+        <h2 class="form-title">Driver Registration</h2>
+        <div class="registerform">
+            <form onsubmit="submitregistrationform(event)">
+                <h3>Registration Form</h3>
+                <label for="name">Full Name</label>
+                <input type="text" name="fname" id="fname" autocomplete="name" required>
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" autocomplete="email" required>
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" name="password" id="password" autocomplete="new-password" required>
+                    <i class="fa fa-eye" id="togglePassword"></i>
+                </div>
+                <center>
+                    <button type="submit" class="submit-btn">Submit</button>
+                </center>
+                <div id="error-message" class="error-message"></div>
+                
+            </form>
+            <div id="verification-section" style="display: none;">
+                <h2>Email Verification</h2>
+                <label for="verification-code">Enter the 6-digit code sent to your email</label>
+                <input type="text" id="verification-code" required>
+                <button onclick="verifyEmailCode(event)">Verify</button>
             </div>
-            <center>
-                <button type="submit" class="submit-btn">Submit</button>
-            </center>
-            <div id="error-message" class="error-message"></div>
-            <a href="login.html">I already have an account</a>
-            <a href="../index.html">go back to main page </a>
-            
-        </form>
-        <div id="verification-section" style="display: none;">
-            <h2>Email Verification</h2>
-            <label for="verification-code">Enter the 6-digit code sent to your email</label>
-            <input type="text" id="verification-code" required>
-            <button onclick="verifyEmailCode(event)">Verify</button>
         </div>
     </div>
     

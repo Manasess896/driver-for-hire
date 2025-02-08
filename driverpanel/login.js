@@ -18,16 +18,32 @@ async function handleLogin(event) {
 
         const result = await response.json();
         if (response.ok) {
-            alert('Login successful! Please check your email for the verification code.');
+            await Swal.fire({
+                title: 'Login Successful',
+                text: 'Please check your email for the verification code.',
+                icon: 'success',
+                showConfirmButton: false,
+                timer: 2000
+            });
             localStorage.setItem('userEmail', email);
             localStorage.setItem('token', result.token); // Store the token
             window.location.href = 'verify-email.html';
         } else {
-            errorMessage.textContent = result.message;
-            submitButton.disabled = false; // Re-enable the submit button
+            await Swal.fire({
+                title: 'Login Failed',
+                text: result.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     } catch (err) {
-        errorMessage.textContent = 'An error occurred. Please try again.';
+        await Swal.fire({
+            title: 'Error',
+            text: 'An error occurred. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    } finally {
         submitButton.disabled = false; // Re-enable the submit button
     }
 }
@@ -68,13 +84,29 @@ async function handleForgotPassword(event) {
 
         const result = await response.json();
         if (response.ok) {
+            await Swal.fire({
+                title: 'Success',
+                text: 'Password reset instructions have been sent to your email.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
             document.getElementById('forgot-password').style.display = 'none';
             document.getElementById('success-popup').style.display = 'block';
         } else {
-            alert(result.message);
+            await Swal.fire({
+                title: 'Error',
+                text: result.message,
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
         }
     } catch (err) {
-        alert('An error occurred. Please try again.');
+        await Swal.fire({
+            title: 'Error',
+            text: 'An error occurred. Please try again.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
 }
 

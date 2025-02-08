@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .support-container {
+            text-align: center;
+            padding: 2vh;
+        }
+
+        .contact-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 2vh;
+            margin: 3vh 0;
+        }
+
+        .contact-method {
+            padding: 2vh;
+            background-color: #f8f9fa;
+            border-radius: 0.5vw;
+            transition: transform 0.3s;
+        }
+
+        .contact-method:hover {
+            transform: translateY(-0.5vh);
+        }
+
+        .contact-method i {
+            font-size: 2vw;
+            color: #4CAF50;
+            margin-bottom: 1vh;
+        }
+
+        .contact-method h3 {
+            color: #333;
+            margin: 1vh 0;
+        }
+
+        .contact-method a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 1.1vw;
+        }
+
+        .contact-method a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="javascript:history.back()" class="back-link"><i class="fas fa-arrow-left"></i> Go Back</a></li>
+            <li><a href="login.html">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="support.html" class="active">Support</a></li>
+        </ul>
+    </nav>
+
+    <div class="form-container">
+        <div class="support-container">
+            <h2 class="form-title">Customer Support</h2>
+            <div class="contact-methods">
+                <div class="contact-method">
+                    <i class="fas fa-envelope"></i>
+                    <h3>Email Support</h3>
+                    <p>Get in touch with our support team</p>
+                    <a href="mailto:webeighteen18@gmail.com">webeighteen18@gmail.com</a>
+                </div>
+                <div class="contact-method">
+                    <i class="fas fa-phone"></i>
+                    <h3>Phone Support</h3>
+                    <p>Call us directly</p>
+                    <a href="tel:+254712345678">+254 712 345 678</a>
+                </div>
+                <div class="contact-method">
+                    <i class="fas fa-comments"></i>
+                    <h3>Live Chat</h3>
+                    <p>Chat with our support team</p>
+                    <a href="#" onclick="alert('Live chat coming soon!')">Start Chat</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

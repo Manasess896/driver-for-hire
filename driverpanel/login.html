@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://kit.fontawesome.com/9d3f00a5c9.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="styles.css">
     <style>
         h1 {
             text-transform: uppercase;
@@ -12,15 +14,21 @@
             font-size: 1.5rem;
         }
         .login-form {
-            width: 70vw;
-            max-width: 350px;
+            width: 80%;
+            max-width: 300px;
             height: auto;
-            display: block;
-            justify-content: center;
+            display: flex;
+            flex-direction: column;
             align-items: center;
             background-color: #f1f1f1;
             margin: auto;
             padding: 2vh;
+        }
+        .login-form form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         .login-form button {
             display: block;
@@ -36,8 +44,8 @@
             max-width: 300px;
             margin: 1vh 0;
             padding: 1.4vh;
-            border: 1px solid #000;
-            border-radius: 5px;
+            border: 0.1vw solid #000;
+            border-radius: 0.5vw;
         }
         .submit-btn {
             background-color: green;
@@ -63,17 +71,20 @@
         }
         .password-container {
             position: relative;
-            width: 100%;
+            width: 90%;
             max-width: 300px;
-            max-width: 300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
         }
         .password-container input {
             width: 100%;
             max-width: 300px;
+            text-align: center;
         }
         .password-container .fa-eye {
             position: absolute;
-            right: 0px;
+            right: 1vw;
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
@@ -101,7 +112,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            border-radius: 2vh;
+            border-radius: 2vw;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
@@ -156,50 +167,82 @@
         #success-popup button:hover {
             background-color: darkgreen;
         }
+        @media screen and (max-width: 768px) {
+            .login-form {
+                width: 90%;
+                max-width: none;
+                padding: 1rem;
+            }
+
+            .password-container {
+                width: 90%;
+                margin: 0 auto;
+            }
+
+            #forgot-password, #success-popup {
+                width: 90vw;
+                padding: 1rem;
+            }
+
+            #forgot-password input {
+                width: 90%;
+                margin: 1rem auto;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>hire a driver</h1>
-    <h2>Login to Your Account</h2>
-    <div class="login-form">
-        <form>
-            <h3>Login Form</h3>
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" autocomplete="email" required>
-            <label for="password">Password</label>
-            <div class="password-container">
-                <input type="password" name="password" id="password" autocomplete="current-password" required>
-                <i class="fa fa-eye" id="togglePassword"></i>
-            </div>
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="login.html" class="active">Login</a></li>
+            <li><a href="register.html">Register</a></li>
+            <li><a href="../about.html">About</a></li>
+        </ul>
+    </nav>
+
+    <div class="form-container">
+        <h2 class="form-title">Driver Login</h2>
+        <h1>hire a driver</h1>
+        <h2>Login to Your Account</h2>
+        <div class="login-form">
+            <form>
+                <h3>Login Form</h3>
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" autocomplete="email" required>
+                <label for="password">Password</label>
+                <div class="password-container">
+                    <input type="password" name="password" id="password" autocomplete="current-password" required>
+                    <i class="fa fa-eye" id="togglePassword"></i>
+                </div>
+                <center>
+                    <button type="submit" class="submit-btn">Submit</button>
+                </center>
+                <div id="error-message" class="error-message"></div>
+            </form>
             <center>
-                <button type="submit" class="submit-btn">Submit</button>
+                <button class="forgot-password-btn" onclick="forgotpassword()">forgot password</button>
             </center>
-            <div id="error-message" class="error-message"></div>
-            <a href="register.html">I don't have an account</a>
-        </form>
-        <center>
-            <button class="forgot-password-btn" onclick="forgotpassword()">forgot password</button>
-            <a href="../index.html">go back to main page </a>
-        </center>
-    </div>
-    <div id="forgot-password">
-        <form onsubmit="handleForgotPassword(event)">
-            <h2>Forgot Password</h2>
-            <label for="forgot-email">Enter your email</label>
-            <input type="email" name="email" id="forgot-email" placeholder="Enter your email" required>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-    <div id="success-popup">
-        <h2>Password Reset</h2>
-        <p>A password reset link has been sent to your email. Please check your inbox and follow the instructions to reset your password.</p>
-        <button onclick="closeSuccessPopup()">OK</button>
-    </div>
-    <div id="verification-section" style="display: none;">
-        <h2>Email Verification</h2>
-        <label for="verification-code">Enter the 6-digit code sent to your email</label>
-        <input type="text" id="verification-code" required>
-        <button onclick="verifyEmailCode(event)">Verify</button>
+        </div>
+        <div id="forgot-password">
+            <form onsubmit="handleForgotPassword(event)">
+                <h2>Forgot Password</h2>
+                <label for="forgot-email">Enter your email</label>
+                <input type="email" name="email" id="forgot-email" placeholder="Enter your email" required>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div id="success-popup">
+            <h2>Password Reset</h2>
+            <p>A password reset link has been sent to your email. Please check your inbox and follow the instructions to reset your password.</p>
+            <button onclick="closeSuccessPopup()">OK</button>
+        </div>
+        <div id="verification-section" style="display: none;">
+            <h2>Email Verification</h2>
+            <label for="verification-code">Enter the 6-digit code sent to your email</label>
+            <input type="text" id="verification-code" required>
+            <button onclick="verifyEmailCode(event)">Verify</button>
+        </div>
     </div>
     <script src="login.js"></script>
 </body>

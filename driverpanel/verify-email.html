@@ -4,94 +4,219 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Verification</title>
+    <link rel="stylesheet" href="styles.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+        body{
+            max-width: 99%;
         }
-        .verification-form {
-            width: 70vw;
-            max-width: 350px;
-            height: auto;
+        .verification-container {
+            text-align: center;
+            padding: 2rem;
+            max-width: 300px;
+            margin: auto;
+        }
+
+        .verification-code-input {
+            display: flex;
+            gap: 1vw;
+            justify-content: center;
+            margin: 3vh 0;
+        }
+
+        .verification-code-input input {
+            width: 5vw;
+            height: 5vw;
+            text-align: center;
+            font-size: 2.5vw;
+            border: 0.2vw solid #ddd;
+            border-radius: 1vw;
+            margin: 0 0.5vw;
+            transition: border-color 0.3s;
+        }
+
+        .verification-code-input input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        .timer-display {
+            color: #666;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+        }
+
+        .action-buttons {
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #fff;
-            margin: auto;
-            padding: 2vh;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            margin-top: 10vh;
+            gap: 1rem;
+            margin: 2rem 0;
         }
-        .verification-form label {
-            font-size: 1rem;
-            text-align: center;
-            text-transform: capitalize;
-            display: block;
-            margin-top: 1vh;
-        }
-        .verification-form input {
-            width: 95%;
-            max-width: 300px;
-            margin: 1vh 0;
-            padding: 1.4vh;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .submit-btn {
-            background-color: green;
+
+        .verify-btn {
+            background-color: #4CAF50;
             color: white;
-            padding: 2vh;
+            padding: 1.5vh 3vw;
             border: none;
-            border-radius: 5px;
-            text-transform: uppercase;
+            border-radius: 5vw;
+            font-size: 1.8vw;
             cursor: pointer;
-            margin-top: 1vh;
+            transition: background-color 0.3s;
         }
-        .request-btn {
-            color: black;
+
+        .verify-btn:hover {
+            background-color: #45a049;
+        }
+
+        .resend-btn {
             background-color: transparent;
-            display: block;
-            border: none;
-            text-transform: lowercase;
+            color: #4CAF50;
+            border: 2px solid #4CAF50;
+            padding: 1.5vh 3vw;
+            border-radius: 5vw;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.8vw;
         }
-        .request-btn:hover {
-            text-decoration: underline;
+
+        .resend-btn:hover {
+            background-color: #4CAF50;
+            color: white;
         }
-        .submit-btn:hover {
-            background-color: darkgreen;
+
+        .resend-btn:disabled {
+            border-color: #ccc;
+            color: #999;
+            cursor: not-allowed;
         }
-        .error-message, .success-message {
-            text-align: center;
-            margin-top: 1vh;
-            font-size: 0.8rem;
+
+        .verification-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
         }
-        .error-message {
-            color: red;
-        }
+
         .success-message {
-            color: green;
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+
+        .email-info {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+
+        #countdown-timer {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        @media screen and (max-width: 768px) {
+            .verification-container {
+                padding: 1rem;
+                max-width: 300px;
+            }
+
+            .verification-code-input {
+                gap: 0.25rem;
+                margin: 1rem 0;
+            }
+
+            .verification-code-input input {
+                width: 5vw;
+                height: 5vw;
+                font-size: 5vw;
+            }
+
+            .action-buttons {
+                padding: 0 1rem;
+            }
+
+            .verify-btn, .resend-btn {
+                padding: 1.5vh 4vw;
+                font-size: 3vw;
+            }
+        }
+
+        @media screen and (max-width: 320px) {
+            .verification-code-input input {
+                width: 2rem;
+                height: 2rem;
+                font-size: 1rem;
+                margin: 0 0.1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="verification-form">
-        <form onsubmit="verifyEmailCode(event)">
-            <h2>Email Verification</h2>
-            <label for="verification-code">Enter the 6-digit code sent to your email</label>
-            <input type="text" id="verification-code" required>
-            <center>
-                <button type="submit" class="submit-btn">Verify</button>
-                <button type="button" class="request-btn" onclick="requestVerificationCodeAgain()" id="request-btn">Request Code Again</button>
-                <div id="countdown-timer" style="display: none;">Please wait <span id="countdown"></span> before requesting another code.</div>
-            </center>
-            <div id="message" class="error-message"></div>
-        </form>
+    <nav class="nav-menu">
+        <ul>
+            <li><a href="../index.html">Home</a></li>
+            <li><a href="javascript:history.back()" class="back-link"><i class="fas fa-arrow-left"></i> Go Back</a></li>
+            <li><a href="mailto:support@example.com">Support</a></li>
+        </ul>
+    </nav>
+
+    <div class="form-container">
+        <div class="verification-container">
+            <h2 class="form-title">Email Verification</h2>
+            <p class="email-info">We've sent a verification code to your email</p>
+            
+            <form onsubmit="verifyEmailCode(event)">
+                <div class="verification-code-input">
+                    <input type="text" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" required>
+                </div>
+                <input type="hidden" id="verification-code">
+                
+                <div class="action-buttons">
+                    <button type="submit" class="verify-btn">Verify Email</button>
+                    <button type="button" class="resend-btn" onclick="requestVerificationCodeAgain()" id="request-btn">
+                        Resend Code
+                    </button>
+                </div>
+                <div id="countdown-timer" style="display: none;">
+                    Please wait <span id="countdown"></span> before requesting another code
+                </div>
+                <div id="message" class="verification-message"></div>
+            </form>
+        </div>
     </div>
+
     <script>
+        // Handle input fields
+        const inputs = document.querySelectorAll('.verification-code-input input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('keyup', (e) => {
+                if (e.key >= 0 && e.key <= 9) {
+                    if (index < inputs.length - 1) {
+                        inputs[index + 1].focus();
+                    }
+                    collectCode();
+                } else if (e.key === 'Backspace') {
+                    if (index > 0) {
+                        inputs[index - 1].focus();
+                    }
+                }
+            });
+        });
+
+        function collectCode() {
+            const code = Array.from(inputs).map(input => input.value).join('');
+            document.getElementById('verification-code').value = code;
+        }
+
         async function verifyEmailCode(event) {
             event.preventDefault();
             const code = document.getElementById('verification-code').value;

@@ -1,7 +1,7 @@
 async function submitregistrationform(event) {
     event.preventDefault();
     const submitButton = event.target.querySelector('button[type="submit"]');
-    submitButton.disabled = true; // Disable the submit button
+    submitButton.disabled = true;
 
     const fname = document.getElementById('fname').value;
     const email = document.getElementById('email').value;
@@ -13,17 +13,14 @@ async function submitregistrationform(event) {
         '1234567', 'abc123', 'password1', '123123'
     ];
 
-    // // Password validation
-    // const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    // if (!passwordRegex.test(password)) {
-    //     errorMessage.textContent = 'Your password is weak. It must be at least 8 characters long and include a mix of uppercase, lowercase, numbers, and special characters.';
-    //     submitButton.disabled = false; // Re-enable the submit button
-    //     return;
-    // }
-
     if (easilyGuessedPasswords.includes(password.toLowerCase()) || password.toLowerCase() === fname.toLowerCase()) {
-        errorMessage.textContent = 'Your password is too easily guessed or matches your name. Please choose a stronger password.';
-        submitButton.disabled = false; // Re-enable the submit button
+        await Swal.fire({
+            icon: 'error',
+            title: 'Weak Password',
+            text: 'Your password is too easily guessed or matches your name. Please choose a stronger password.',
+            confirmButtonColor: '#4CAF50'
+        });
+        submitButton.disabled = false;
         return;
     }
 
@@ -38,17 +35,34 @@ async function submitregistrationform(event) {
 
         const result = await response.json();
         if (response.ok) {
-            alert('Registration successful! Please check your email for the verification code.');
+            await Swal.fire({
+                icon: 'success',
+                title: 'Registration Successful!',
+                text: 'Please check your email for the verification code.',
+                timer: 2000,
+                showConfirmButton: false,
+                timerProgressBar: true
+            });
             localStorage.setItem('userEmail', email);
-            localStorage.setItem('token', result.token); // Store the token
+            localStorage.setItem('token', result.token);
             window.location.href = 'verify-email.html';
         } else {
-            errorMessage.textContent = result.message;
-            submitButton.disabled = false; // Re-enable the submit button
+            await Swal.fire({
+                icon: 'error',
+                title: 'Registration Failed',
+                text: result.message,
+                confirmButtonColor: '#4CAF50'
+            });
         }
     } catch (err) {
-        errorMessage.textContent = 'An error occurred. Please try again.';
-        submitButton.disabled = false; // Re-enable the submit button
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An error occurred. Please try again.',
+            confirmButtonColor: '#4CAF50'
+        });
+    } finally {
+        submitButton.disabled = false;
     }
 }
 

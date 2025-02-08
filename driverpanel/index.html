@@ -4,32 +4,128 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Driver Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .session-timer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: #f8f9fa;
+            padding: 5px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #eee;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: #4CAF50;
+            transition: width 1s linear;
+        }
+
+        .timer-text {
+            font-size: 0.8rem;
+            color: #666;
+            margin: 2px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>hire a driver</h1>
-    <h2>Welcome to the Driver Panel</h2>
-    <div id="user-info" class="user-info">
-        <!-- User information will be displayed here -->
+    <div class="session-timer">
+        <div class="progress-bar">
+            <div class="progress-bar-fill" id="sessionProgress"></div>
+        </div>
+        <div class="timer-text">
+            Session time remaining: <span id="timeRemaining">--:--:--</span>
+        </div>
     </div>
-    <center>
-        <button class="edit-btn" onclick="toggleEditForm()">Edit Information</button>
-    </center>
-    <form id="edit-form" class="edit-form">
-        <!-- Editable fields will be populated here -->
-        <input type="text" id="edit-name" name="name" placeholder="Full Name" required>
-        <input type="email" id="edit-email" name="email" placeholder="Email" required>
-        <input type="tel" id="edit-phone" name="phone" placeholder="Phone Number" required>
-        <input type="date" id="edit-dob" name="dob" required>
-        <input type="text" id="edit-license" name="license" placeholder="Driver's License Number" required>
-        <input type="number" id="edit-experience" name="experience" placeholder="Years of Experience" required>
-        <select id="edit-hasCar" name="hasCar">
-            <option value="yes">Yes</option>
-            <option value="no">No</option>
-        </select>
-        <button type="submit">Save Changes</button>
-    </form>
-    <a href="../index.html">go back to main page </a>
+    <div class="panel-container">
+        <h1>Driver Panel</h1>
+        <div id="user-info" class="info-sections">
+            <!-- User information will be displayed here dynamically -->
+        </div>
+        
+        <form id="edit-form" class="edit-form" style="display: none;">
+            <h3>Edit Information</h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="edit-name">First Name</label>
+                    <input type="text" id="edit-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-lname">Last Name</label>
+                    <input type="text" id="edit-lname" name="lname" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-phone">Phone Number</label>
+                    <input type="tel" id="edit-phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-dob">Date of Birth</label>
+                    <input type="date" id="edit-dob" name="dob" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-license">License Number</label>
+                    <input type="text" id="edit-license" name="license" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-experience">Years of Experience</label>
+                    <input type="number" id="edit-experience" name="experience" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-age">Age</label>
+                    <input type="number" id="edit-age" name="age" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-rate">Rate ($/km)</label>
+                    <input type="number" id="edit-rate" name="rate" step="0.01" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-location">Location</label>
+                    <input type="text" id="edit-location" name="location" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-hasCar">Has Car</label>
+                    <select id="edit-hasCar" name="hasCar">
+                        <option value="yes">Yes</option>
+                        <option value="no">No</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="license-classes">
+                <div class="license-class-item">
+                    <input type="checkbox" id="edit-classa" name="classes.classA">
+                    <label for="edit-classa">Class A</label>
+                </div>
+                <!-- Repeat for other classes -->
+            </div>
+
+            <div class="form-group">
+                <label for="edit-image">Update Profile Image</label>
+                <input type="file" id="edit-image" name="image" accept="image/*">
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="action-button primary-button">Save Changes</button>
+                <button type="button" class="action-button secondary-button" onclick="toggleEditForm()">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="info.html" class="action-button primary-button">Add More Information</a>
+        <a href="../index.html" class="action-button secondary-button">Back to Main Page</a>
+    </div>
+
     <script src="main.js"></script>
 </body>
 </html>

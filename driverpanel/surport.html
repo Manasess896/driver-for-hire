@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Documentation - Driver for Hire</title>
+   
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .support-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .support-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .search-box {
+            width: 100%;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .error-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .error-section h2 {
+            color: #d32f2f;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .error-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .error-title {
+            font-weight: bold;
+            color: #2196F3;
+            margin-bottom: 10px;
+        }
+
+        .error-description {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .solution {
+            background: #e3f2fd;
+            padding: 15px;
+            border-left: 4px solid #2196F3;
+            margin-top: 10px;
+        }
+
+        .solution h4 {
+            color: #1976D2;
+            margin: 0 0 10px 0;
+        }
+
+        .category-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .category-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            background: #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .category-btn:hover,
+        .category-btn.active {
+            background: #2196F3;
+            color: white;
+        }
+
+        .contact-support {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .support-container {
+                padding: 10px;
+            }
+            
+            .error-section {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="support-container">
+        <div class="support-header">
+            <h1>Support Documentation</h1>
+            <p>Find solutions to common issues and learn how to use our platform effectively</p>
+        </div>
+
+        <input type="text" class="search-box" id="errorSearch" 
+               placeholder="Search for specific errors or topics...">
+
+        <div class="category-nav">
+            <button class="category-btn active" data-category="all">All</button>
+            <button class="category-btn" data-category="auth">Authentication</button>
+            <button class="category-btn" data-category="submission">Information Submission</button>
+            <button class="category-btn" data-category="account">Account Management</button>
+            <button class="category-btn" data-category="technical">Technical Issues</button>
+        </div>
+
+        <div class="error-sections">
+            <!-- Authentication Errors -->
+            <div class="error-section" data-category="auth">
+                <h2>Authentication Issues</h2>
+                
+                <div class="error-item">
+                    <div class="error-title">Session Expired</div>
+                    <div class="error-description">
+                        Your session has timed out after 10 minutes of inactivity for security reasons.
+                    </div>
+                    <div class="solution">
+                        <h4>Solution:</h4>
+                        <ul>
+                            <li>Click the "Extend Session" button when prompted</li>
+                            <li>If already logged out, simply log in again</li>
+                            <li>Keep the page active to avoid timeouts</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">Invalid Verification Code</div>
+                    <div class="error-description">
+                        The verification code you entered doesn't match or has expired.
+                    </div>
+                    <div class="solution">
+                        <h4>Solution:</h4>
+                        <ul>
+                            <li>Check your email for the most recent code</li>
+                            <li>Request a new code if more than 5 minutes have passed</li>
+                            <li>Ensure you're entering the code correctly</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submission Errors -->
+            <div class="error-section" data-category="submission">
+                <h2>Information Submission Issues</h2>
+                
+                <div class="error-item">
+                    <div class="error-title">Invalid License Plate Format</div>
+                    <div class="error-description">
+                        The license plate number you entered doesn't match the required Kenyan format.
+                    </div>
+                    <div class="solution">
+                        <h4>Solution:</h4>
+                        <ul>
+                            <li>Use the format: KAA 123A</li>
+                            <li>Include spaces exactly as shown</li>
+                            <li>Use only valid Kenyan plate combinations</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">Image Upload Failed</div>
+                    <div class="error-description">
+                        Your image couldn't be uploaded due to size or format issues.
+                    </div>
+                    <div class="solution">
+                        <h4>Solution:</h4>
+                        <ul>
+                            <li>Ensure image is less than 5MB</li>
+                            <li>Use only JPG, JPEG, or PNG formats</li>
+                            <li>Try compressing the image if it's too large</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">Too Many Attempts (Error 429)</div>
+                    <div class="error-description">
+                        You've reached the maximum number of allowed attempts for a specific action.
+                    </div>
+                    <div class="solution">
+                        <h4>Rate Limits:</h4>
+                        <ul>
+                            <li>Registration: 5 attempts per 15 minutes</li>
+                            <li>Login: 5 attempts per 15 minutes</li>
+                            <li>Email Verification: 3 attempts per 15 minutes</li>
+                            <li>Image Uploads: 6 images maximum for car submission</li>
+                        </ul>
+                        <h4>Solution:</h4>
+                        <ul>
+                            <li>Wait for the cooldown period to expire (15 minutes)</li>
+                            <li>Verify your information before submitting to avoid multiple attempts</li>
+                            <li>If using automation tools, ensure they respect rate limits</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">Submission Guidelines</div>
+                    <div class="error-description">
+                        Important limits and requirements for submitting driver and car information.
+                    </div>
+                    <div class="solution">
+                        <h4>Driver Information Limits:</h4>
+                        <ul>
+                            <li>Profile Image: Maximum 5MB, JPG/JPEG/PNG only</li>
+                            <li>License Classes: Select all that apply</li>
+                            <li>Phone Number: Valid format required</li>
+                            <li>Experience: Must be a reasonable number</li>
+                        </ul>
+                        <h4>Car Information Limits:</h4>
+                        <ul>
+                            <li>Car Images: Maximum 6 images, 5MB each</li>
+                            <li>License Plate: Must follow Kenyan format (KAA 123A)</li>
+                            <li>Mileage: Must be a valid number</li>
+                            <li>Consumption: Must be in L/100km format</li>
+                        </ul>
+                        <h4>Tips:</h4>
+                        <ul>
+                            <li>Compress images before uploading to meet size limits</li>
+                            <li>Double-check all information before submission</li>
+                            <li>Save your progress if you need to gather more information</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">Verification Process</div>
+                    <div class="error-description">
+                        Understanding the verification process for submitted information.
+                    </div>
+                    <div class="solution">
+                        <h4>Process:</h4>
+                        <ul>
+                            <li>Submit information according to guidelines</li>
+                            <li>Wait for email verification (expires in 5 minutes)</li>
+                            <li>Complete verification within the time limit</li>
+                            <li>Session remains active for 10 minutes</li>
+                        </ul>
+                        <h4>If Verification Fails:</h4>
+                        <ul>
+                            <li>Request a new verification code</li>
+                            <li>Check spam folder for verification emails</li>
+                            <li>Contact support if issues persist</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Account Management -->
+            <div class="error-section" data-category="account">
+                <h2>Account Management Issues</h2>
+                
+                <div class="error-item">
+                    <div class="error-title">Account and Information Deletion</div>
+                    <div class="error-description">
+                        Understanding your deletion options and their consequences.
+                    </div>
+                    <div class="solution">
+                        <h4>Deletion Options:</h4>
+                        <ul>
+                            <li>Driver Information Only: Removes your driver profile while keeping your account</li>
+                            <li>Car Information Only: Removes your car details while keeping your account</li>
+                            <li>Both Information: Removes all your driver and car information</li>
+                            <li>Complete Account: Permanently deletes your account and all associated information</li>
+                        </ul>
+                        <h4>Important Notes:</h4>
+                        <ul>
+                            <li>All deletions have a 30-day recovery period</li>
+                            <li>Account deletion removes access to all services</li>
+                            <li>Recovery requires contacting support with your archive ID</li>
+                            <li>After 30 days, deletion becomes permanent</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="error-item">
+                    <div class="error-title">Deletion and Recovery</div>
+                    <div class="error-description">
+                        Understanding the process of deleting and recovering your information.
+                    </div>
+                    <div class="solution">
+                        <h4>Important Information:</h4>
+                        <ul>
+                            <li>Deleted information is archived for 30 days</li>
+                            <li>You can choose to delete driver info, car info, or both</li>
+                            <li>Contact support within 30 days for recovery</li>
+                            <li>After 30 days, deletion becomes permanent</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Issues -->
+            <div class="error-section" data-category="technical">
+                <h2>Technical Issues</h2>
+                
+                <div class="error-item">
+                    <div class="error-title">Connection Problems</div>
+                    <div class="error-description">
+                        Issues with connecting to our services or submitting information.
+                    </div>
+                    <div class="solution">
+                        <h4>Solution:</h4>
+                        <ul>
+                            <li>Check your internet connection</li>
+                            <li>Clear your browser cache</li>
+                            <li>Try using a different browser</li>
+                            <li>Disable VPN if you're using one</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-support">
+            <h3>Still Need Help?</h3>
+            <p>Contact our support team at: <a href="mailto:webeighteen18@gmail.com">webeighteen18@gmail.com</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        document.getElementById('errorSearch').addEventListener('input', function(e) {
+            const searchText = e.target.value.toLowerCase();
+            const errorItems = document.querySelectorAll('.error-item');
+            
+            errorItems.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchText) ? 'block' : 'none';
+            });
+        });
+
+        // Category filtering
+        document.querySelectorAll('.category-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button
+                document.querySelectorAll('.category-btn').forEach(btn => 
+                    btn.classList.remove('active'));
+                this.classList.add('active');
+
+                // Filter sections
+                const category = this.dataset.category;
+                document.querySelectorAll('.error-section').forEach(section => {
+                    if (category === 'all' || section.dataset.category === category) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
